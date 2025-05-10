@@ -1,0 +1,297 @@
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+
+    .button-row {
+        display: flex;
+        justify-content: flex-start;
+        width: 100%;
+        max-width: 500px;
+        margin: 200px auto 20px; /* Increased to clear Wix header */
+        padding: 0 20px;
+    }
+
+    .toggle-button {
+        width: 100%; /* Stretch full width */
+        padding: 16px 24px; /* Adjusted for larger font */
+        background-color: #000000; /* Black button */
+        border: 2px solid #00ff00; /* Green border */
+        border-radius: 8px;
+        color: #ffffff; /* White text */
+        font-size: 2.2em; /* Doubled font size */
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+    }
+
+    .toggle-button:hover {
+        background-color: #00ff00; /* Green on hover */
+        color: #000000; /* Black text on hover */
+    }
+
+    .container {
+        background-color: #1a1a1a; /* Dark gray for card */
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 255, 0, 0.1);
+        padding: 30px;
+        max-width: 500px;
+        width: 100%;
+        margin: 20px auto;
+        display: none; /* Hidden by default */
+        font-family: Arial, sans-serif;
+        color: #ffffff; /* White text */
+    }
+
+    .container h2 {
+        text-align: center;
+        color: #00ff00; /* Green title */
+        margin-bottom: 20px;
+        font-size: 1.6em;
+        font-weight: bold;
+    }
+
+    .container label {
+        display: block;
+        margin: 10px 0 5px;
+        color: #ffffff; /* White labels */
+        font-weight: 500;
+    }
+
+    .container input, .container select {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 15px;
+        border: 1px solid #00ff00; /* Green border */
+        border-radius: 8px;
+        font-size: 1em;
+        background-color: #333333; /* Dark input background */
+        color: #ffffff; /* White text */
+        transition: border-color 0.3s ease;
+    }
+
+    .container input:focus, .container select:focus {
+        outline: none;
+        border-color: #00cc00; /* Darker green on focus */
+        box-shadow: 0 0 5px rgba(0, 255, 0, 0.3);
+    }
+
+    .container button.calculate-button {
+        width: 100%;
+        padding: 12px;
+        background-color: #00ff00; /* Green button */
+        border: none;
+        border-radius: 8px;
+        color: #000000; /* Black text */
+        font-size: 1.1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .container button.calculate-button:hover {
+        background-color: #00cc00; /* Darker green on hover */
+    }
+
+    #customResolution {
+        margin-bottom: 15px;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent overlay */
+        z-index: 2000;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-content {
+        background-color: #1a1a1a;
+        padding: 20px;
+        border-radius: 8px;
+        border: 2px solid #00ff00;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+    }
+
+    .modal-content p {
+        color: #00ff00;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+    }
+
+    .modal-content button {
+        padding: 10px 20px;
+        background-color: #00ff00;
+        border: none;
+        border-radius: 8px;
+        color: #000000;
+        font-size: 1em;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .modal-content button:hover {
+        background-color: #00cc00;
+    }
+
+    @media (max-width: 480px) {
+        .button-row {
+            padding: 0 10px;
+            margin: 150px auto 10px; /* Adjusted for mobile header */
+        }
+
+        .toggle-button {
+            font-size: 2em; /* Slightly smaller but doubled */
+            padding: 12px 20px;
+        }
+
+        .container {
+            padding: 20px;
+            margin: 10px;
+        }
+
+        .container h2 {
+            font-size: 1.4em;
+        }
+
+        .container input, .container select, .container button.calculate-button {
+            font-size: 0.9em;
+            padding: 10px;
+        }
+
+        .modal-content {
+            width: 95%;
+            padding: 15px;
+        }
+    }
+</style>
+
+<div class="button-row">
+    <button class="toggle-button" onclick="toggleCalculator()">Calculate The Storage</button>
+</div>
+<div class="container" id="calculatorContainer">
+    <h2>Calculate Hard Drive Space</h2>
+    <form id="storageForm">
+        <label for="months">Months:</label>
+        <input type="number" id="months" min="0" value="0" placeholder="Enter months">
+
+        <label for="days">Days:</label>
+        <input type="number" id="days" min="0" value="0" placeholder="Enter days">
+
+        <label for="hours">Hours:</label>
+        <input type="number" id="hours" min="0" value="0" placeholder="Enter hours">
+
+        <label for="resolution">Resolution:</label>
+        <select id="resolution" onchange="toggleCustomResolution()">
+            <option value="1920x1080">1080p (1920x1080)</option>
+            <option value="3840x2160">4K (3840x2160)</option>
+            <option value="7680x4320">8K (7680x4320)</option>
+            <option value="custom">Custom</option>
+        </select>
+
+        <div id="customResolution" style="display: none;">
+            <label for="width">Width (pixels):</label>
+            <input type="number" id="width" min="1" placeholder="Enter width">
+
+            <label for="height">Height (pixels):</label>
+            <input type="number" id="height" min="1" placeholder="Enter height">
+        </div>
+
+        <label for="fps">Frame Rate (FPS):</label>
+        <input type="number" id="fps" min="1" value="30" placeholder="Enter FPS">
+
+        <label for="compression">Compression Type:</label>
+        <select id="compression">
+            <option value="uncompressed">Uncompressed</option>
+            <option value="h264">H.264</option>
+            <option value="h265">H.265</option>
+        </select>
+
+        <button type="button" class="calculate-button" onclick="calculateStorage()">Calculate</button>
+    </form>
+</div>
+<div class="modal" id="resultModal">
+    <div class="modal-content">
+        <p id="resultText"></p>
+        <button onclick="closeModal()">Close</button>
+    </div>
+</div>
+
+<script>
+    function toggleCustomResolution() {
+        const resolution = document.getElementById('resolution').value;
+        const customDiv = document.getElementById('customResolution');
+        customDiv.style.display = resolution === 'custom' ? 'block' : 'none';
+    }
+
+    function toggleCalculator() {
+        const container = document.getElementById('calculatorContainer');
+        const button = document.querySelector('.toggle-button');
+        if (container.style.display === 'none' || container.style.display === '') {
+            container.style.display = 'block';
+            button.textContent = 'Done';
+        } else {
+            container.style.display = 'none';
+            button.textContent = 'Calculate Storage';
+        }
+    }
+
+    function calculateStorage() {
+        const months = parseFloat(document.getElementById('months').value) || 0;
+        const days = parseFloat(document.getElementById('days').value) || 0;
+        const hours = parseFloat(document.getElementById('hours').value) || 0;
+        const totalSeconds = (months * 30 * 24 * 3600) + (days * 24 * 3600) + (hours * 3600);
+        let width, height;
+        const resolution = document.getElementById('resolution').value;
+        if (resolution === 'custom') {
+            width = parseInt(document.getElementById('width').value) || 0;
+            height = parseInt(document.getElementById('height').value) || 0;
+        } else {
+            [width, height] = resolution.split('x').map(Number);
+        }
+        const fps = parseFloat(document.getElementById('fps').value) || 0;
+        const compression = document.getElementById('compression').value;
+        if (totalSeconds <= 0 || width <= 0 || height <= 0 || fps <= 0) {
+            showResult('Please enter valid values for all fields.');
+            return;
+        }
+        const pixels = width * height;
+        const bytesPerFrame = pixels * 3;
+        let totalBytes = bytesPerFrame * fps * totalSeconds;
+        let compressionType = 'Uncompressed';
+        if (compression === 'h264') {
+            totalBytes /= 100;
+            compressionType = 'H.264';
+        } else if (compression === 'h265') {
+            totalBytes /= 200;
+            compressionType = 'H.265';
+        }
+        const totalGB = totalBytes / 1e9;
+        showResult(`Required Storage: ${totalGB.toFixed(2)} GB (${compressionType})`);
+    }
+
+    function showResult(message) {
+        const modal = document.getElementById('resultModal');
+        const resultText = document.getElementById('resultText');
+        resultText.textContent = message;
+        modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+        const modal = document.getElementById('resultModal');
+        modal.style.display = 'none';
+    }
+</script>
